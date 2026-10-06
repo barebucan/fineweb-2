@@ -2,8 +2,12 @@
 
 Example:
     python reproduce_tld_bug.py \
-        --text "neutral token without a Croatian wordlist hit" \
+        --text "Ovo je jednostavan tekst na hrvatskom jeziku. Govori o svakodnevnom životu ljudi u Zagrebu, njihovom radu, učenju i druženju tijekom godine." \
         --url "https://example.hr/article"
+
+The example text is classified as ``hrv_Latn`` by the pipeline's GlotLID
+backend with a 0.9722 confidence score (the Croatian threshold is 0.467), while
+containing zero entries from the official Croatian precision wordlist.
 
 The production module starts SLURM jobs at import time, so this script uses the
 same AST-based class loader as ``tests/test_url_filter.py``. The loaded

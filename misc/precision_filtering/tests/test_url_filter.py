@@ -75,7 +75,11 @@ class URLFilterTest(unittest.TestCase):
                 sys.executable,
                 str(REPRODUCER_PATH),
                 "--text",
-                "neutral token without a Croatian wordlist hit",
+                (
+                    "Ovo je jednostavan tekst na hrvatskom jeziku. Govori o "
+                    "svakodnevnom životu ljudi u Zagrebu, njihovom radu, učenju "
+                    "i druženju tijekom godine."
+                ),
                 "--url",
                 "https://example.hr/article",
             ],
