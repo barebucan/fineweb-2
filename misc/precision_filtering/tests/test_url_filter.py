@@ -1,5 +1,7 @@
 import ast
 import os
+import subprocess
+import sys
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
@@ -9,6 +11,7 @@ from tldextract import TLDExtract
 
 
 SCRIPT_PATH = Path(__file__).parents[1] / "run_precision_filtering.py"
+REPRODUCER_PATH = Path(__file__).parents[1] / "reproduce_tld_bug.py"
 
 
 def load_filter_class():
@@ -65,6 +68,26 @@ class URLFilterTest(unittest.TestCase):
         for url in ["https://example.com/archive.hr/article", "https://example.hr.example.com/article"]:
             with self.subTest(url=url):
                 self.assertFalse(url_filter.url_filter(SimpleNamespace(metadata={"url": url})))
+
+    def test_reproducer_calls_base_and_current_pipeline(self):
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(REPRODUCER_PATH),
+                "--text",
+                "neutral token without a Croatian wordlist hit",
+                "--url",
+                "https://example.hr/article",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+
+        self.assertIn("Base pipeline decision:    REJECTED", result.stdout)
+        self.assertIn("Current pipeline decision: ACCEPTED", result.stdout)
+        self.assertIn("Wordlist match count:      0", result.stdout)
+        self.assertIn("Bug reproduced:            YES", result.stdout)
 
 
 if __name__ == "__main__":
